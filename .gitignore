@@ -18,12 +18,12 @@ models/
 # MLflow
 mlruns/
 
-# Reports
-reports/
+# Reports (keep dir, ignore generated files)
+reports/*.png
+reports/*.html
 
 # Jupyter
 .ipynb_checkpoints/
-*.ipynb
 
 # Coverage
 .coverage
