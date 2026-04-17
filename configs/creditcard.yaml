@@ -1,0 +1,65 @@
+pipeline:
+  name: creditcard-fraud
+  version: "1.0"
+  random_seed: 42
+
+data:
+  raw_path: data/raw/creditcard.parquet
+  processed_path: data/processed/creditcard_clean.parquet
+  features_path: data/features/creditcard_features.parquet
+  test_size: 0.2
+  val_size: 0.1
+  target_column: Class
+  # No id or timestamp columns in this dataset
+
+preprocessing:
+  drop_columns: []
+  categorical_columns: []   # All features are already numeric (PCA)
+  numeric_columns:
+    - Time
+    - Amount
+    - V1
+    - V2
+    - V3
+    - V4
+    - V5
+    - V6
+    - V7
+    - V8
+    - V9
+    - V10
+    - V11
+    - V12
+    - V13
+    - V14
+    - V15
+    - V16
+    - V17
+    - V18
+    - V19
+    - V20
+    - V21
+    - V22
+    - V23
+    - V24
+    - V25
+    - V26
+    - V27
+    - V28
+  handle_imbalance: smote
+  smote_sampling_strategy: 0.1
+
+training:
+  models:
+    - xgboost
+    - lightgbm
+  n_trials: 30
+  cv_folds: 5
+  scoring: average_precision
+  mlflow_tracking_uri: mlruns
+  mlflow_experiment: creditcard-fraud
+
+evaluation:
+  threshold_search: true
+  threshold_metric: f1
+  report_path: reports/evaluation_report.html
