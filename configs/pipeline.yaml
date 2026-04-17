@@ -1,0 +1,60 @@
+pipeline:
+  name: fraud-prediction
+  version: "1.0"
+  random_seed: 42
+
+data:
+  raw_path: data/raw/transactions.csv
+  processed_path: data/processed/transactions_clean.parquet
+  features_path: data/features/features.parquet
+  test_size: 0.2
+  val_size: 0.1
+  target_column: is_fraud
+  id_column: transaction_id
+  timestamp_column: transaction_time
+
+preprocessing:
+  drop_columns: []
+  categorical_columns:
+    - merchant_category
+    - card_type
+    - entry_mode
+  numeric_columns:
+    - amount
+    - distance_from_home
+    - distance_from_last_transaction
+    - ratio_to_median_purchase_price
+  handle_imbalance: smote
+  smote_sampling_strategy: 0.1
+
+features:
+  velocity_windows: [1h, 6h, 24h, 7d]
+  aggregation_keys:
+    - card_id
+    - merchant_id
+  aggregations:
+    - mean
+    - std
+    - count
+    - sum
+
+training:
+  models:
+    - xgboost
+    - lightgbm
+  n_trials: 50
+  cv_folds: 5
+  scoring: average_precision
+  mlflow_tracking_uri: mlruns
+  mlflow_experiment: fraud-detection
+
+evaluation:
+  threshold_search: true
+  threshold_metric: f1
+  report_path: reports/evaluation_report.html
+
+serving:
+  host: 0.0.0.0
+  port: 8000
+  model_path: models/best_model.pkl
+  feature_names_path: models/feature_names.json
